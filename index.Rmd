@@ -15,7 +15,7 @@ Crime has been a major issue in the city of Los Angeles due to a variety of fact
 
 Currently, most analyses of police report data focus on determining the total counts of each type of crime to examine crime rate trends over time. However, advanced analysis is necessary to identify which demographic groups are most affected by crime. This would allow for the development of targeted programs that not only assist those in need, but also help prevent future occurrences. Thus, this paper aims to analyze the available data from LAPD ARS to identify 1) which demographic experienced the most crime from 2010 to 2019, 2) the types of crime they most reported, and 3) the locations in Los Angeles where they occurred most frequently.
 
-For information on the methods used in this analysis and the citations, please read the full report here: [An Analysis of Crime in Los Angeles from 2010 to 2019](Written-Report.pdf)
+For information on the methods used in this analysis and the citations, please read the full report here: [An Analysis of Crime in Los Angeles from 2010 to 2019](Written-Report.pdf).
 
 The results are displayed below:
 
@@ -101,7 +101,7 @@ Looking at the age distribution of Hispanic female victims who reported crimes, 
 ### Tab 3
 
 | Ranking of Reported Crimes | Top Crimes for Los Angeles |              Top Crimes for Males              |      Top Crimes for Females       |  Top Crimes for Hispanic Females  | Top Crimes for Hispanic Females Aged 20-29 |
-|:--------------------------:|:--------------------------:|:----------------------------------------------:|:---------------------------------:|:---------------------------------:|:------------------------------------------:|
+|:----------:|:----------:|:----------:|:----------:|:----------:|:----------:|
 |             1              |  Battery - Simple Assault  |            Battery - Simple Assault            |     Battery - Simple Assault      | Intimate Partner - Simple Assault |     Intimate Partner - Simple Assault      |
 |             2              |   Burglary from Vehicle    |             Burglary from Vehicle              | Intimate Partner - Simple Assault |     Battery - Simple Assault      |          Battery - Simple Assault          |
 |             3              |   Petty Theft (\< \$950)   |                    Burglary                    |       Burglary from Vehicle       |       Burglary from Vehicle       |           Burglary from Vehicle            |
