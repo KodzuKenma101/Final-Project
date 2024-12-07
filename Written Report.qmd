@@ -472,7 +472,7 @@ HispanicFemalearea |>
 
 ```
 
-When analyzing the choropleth map, it is evident that Hispanic women are heavily clustered east of the city of Los Angeles. However, within the city boundaries, they have pockets of high population density in the precinct areas of Mission, Newton, 77th Street, Southeast, Hollenbeck, Southwest, Rampart, Olympic, Foothill, and Harbor. The coordinate with the highest incidents of crime was located in the the western Central Precinct area with 315 reports, followed by 210 reports in central Devonshire. Interestingly, neighborhoods reporting high levels of crime (greater than 100 reports) typically had low percentages of Hispanic women. However, according to the map, crime was heavily clustered in the Mission, Rampart, and Central precinct areas.
+When analyzing the [choropleth](https://kodzukenma101.github.io/Final-Project/) map (Tab 6), it is evident that Hispanic women are heavily clustered east of the city of Los Angeles. However, within the city boundaries, they have pockets of high population density in the precinct areas of Mission, Newton, 77th Street, Southeast, Hollenbeck, Southwest, Rampart, Olympic, Foothill, and Harbor. The coordinate with the highest incidents of crime was located in the the western Central Precinct area with 315 reports, followed by 210 reports in central Devonshire. Interestingly, neighborhoods reporting high levels of crime (greater than 100 reports) typically had low percentages of Hispanic women. However, according to the map, crime was heavily clustered in the Mission, Rampart, and Central precinct areas.
 
 ## Conclusion and Summary
 
