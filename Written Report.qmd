@@ -12,17 +12,20 @@ csl: https://raw.githubusercontent.com/citation-style-language/styles/master/apa
 
 Crime has been a major issue in the city of Los Angeles due to a variety of factors, including high population density, gang activity, and elevated levels of poverty and homelessness [@berger2018a]. Boasting one of the highest crime rates in the nation (36 per 1,000 residents), Los Angeles is considered safer than only 7% of U.S. cities [@neighborhoodscout]. In order to keep track of the crime incidents, police officers are required to fill out a police report which is later transcribed to their digital record system. According to the Los Angeles Police Department Automated Report System (LAPD ARS), approximately 2.1 million crime incidents took place in Los Angeles from 2010 to 2019 [@lacitydata]. However, it should be noted that this figure is likely an underestimate as many crimes go unreported [@Wu2019].
 
-Currently, most analyses of police report data focus on determining the total counts of each type of crime to examine crime rate trends over time. However, advanced analysis is necessary to identify which demographic groups are most affected by crime. This would allow for the development of targeted programs that not only assist those in need, but also help prevent future occurences. Thus, this paper aims to analyze the available data from LAPD ARS to identify 1) which demographic experienced the most crime from 2010 to 2019, 2) the types of crime they most reported, and 3) the locations in Los Angeles where they occurred most frequently.
+Currently, most analyses of police report data focus on determining the total counts of each type of crime to examine crime rate trends over time. However, advanced analysis is necessary to identify which demographic groups are most affected by crime. This would allow for the development of targeted programs that not only assist those in need, but also help prevent future occurrences. Thus, this paper aims to analyze the available data from LAPD ARS to identify 1) which demographic experienced the most crime from 2010 to 2019, 2) the types of crime they most reported, and 3) the locations in Los Angeles where they occurred most frequently.
 
 ## Methods
 
-Data was retrieved from the ["Crime Data from 2010 to 2019"](https://data.lacity.org/Public-Safety/Crime-Data-from-2010-to-2019/63jg-8b9z/about_data) dataset on the Los Angeles Open Data website. Crime incidents with missing gender and ethnicity were categorized under the appropriate "unknown" category. Latitude and longitude values of 0º were converted to missing values in accordance with the dataset's notes. Furthermore, upon exploratory analysis, an age of zero appeared to have been used when age was unknown, making it challenging to differentiate between crimes involving children of 0 years old and those where the age was not recorded. Consequently, all observations with an age of 0 were converted into missing values, except for those associated with crime codes related to children (child abandonment, child abuse (physical) - aggravated assault, child abuse (physical) - simple assault, child annoying (17yrs & under), child neglect (see 300 W.I.C.), child pornography, child stealing, and lewd/lascivious acts with child). Ethnic data was condensed into 6 groups: Asian, Black, Hispanic, White, Pacific Islander, and Unknown. Only records with complete data for these variables, as well as precinct area, were included in the subsequent analysis.
+Data was retrieved from the ["Crime Data from 2010 to 2019"](https://data.lacity.org/Public-Safety/Crime-Data-from-2010-to-2019/63jg-8b9z/about_data) dataset on the Los Angeles Open Data website. Crime incidents with missing gender and ethnicity were categorized under the appropriate "unknown" category. Latitude and longitude values of 0º were converted to missing values in accordance with the dataset's notes. Ages less than zero were converted to missing values. Furthermore, upon exploratory analysis, an age of zero appeared to have been used when age was unknown, making it challenging to differentiate between crimes involving children of 0 years old and those where the age was not recorded. Consequently, all observations with an age of 0 were converted into missing values, except for those associated with crime codes related to children (child abandonment, child abuse (physical) - aggravated assault, child abuse (physical) - simple assault, child annoying (17yrs & under), child neglect (see 300 W.I.C.), child pornography, child stealing, and lewd/lascivious acts with child). Ethnic data was condensed into 6 groups: Asian, Black, Hispanic, White, Pacific Islander, and Unknown. Only records with complete data for these variables, as well as precinct area, were included in the subsequent analysis.
 
 ```{r include = FALSE}
 
 library(data.table)
 library(dtplyr)
 library(dplyr)
+library(httr)
+
+options(timeout = 300)
 
 LAdata <- data.table::fread("C:/Users/ellya/OneDrive/Desktop/Final Project/Final Project/Crime_Data_from_2010_to_2019_20241025.csv")
 
@@ -35,18 +38,28 @@ sum(duplicated(LAdata)) #checked for dulplicated data --> no duplicates
 #Victim Age
 #An age of zero appeared to have been used when age was unknown, making it challenging to differentiate between crimes involving children of 0 years old and those where the age was not recorded. Consequently, all observations with an age of 0 were converted into missing values, except for those associated with crime codes related to children. 
 table(LAdata$`Vict Age`)
-LAdata$`Vict Age`[LAdata$`Vict Age` == 0] <- NA
-LAdata$`Vict Age`[LAdata$`Crm Cd Desc` %in% c("CHILD ABANDONMENT", 
-                                              "CHILD ABUSE (PHYSICAL) - SIMPLE ASSAULT", 
-                                              "CHILD ABUSE (PHYSICAL) - AGGRAVATED ASSAULT", 
-                                              "CHILD ANNOYING (17YRS & UNDER)", 
-                                              "CHILD NEGLECT (SEE 300 W.I.C.)", 
-                                              "CHILD PORNOGRAPHY", 
-                                              "CHILD STEALING", 
-                                              "LEWD/LASCIVIOUS ACTS WITH CHILD")
-                  ] <- 0
+LAdata$`Vict Age`[LAdata$`Vict Age` < 0] <- NA
+LAdata$`Vict Age`[LAdata$`Vict Age` == 0 & LAdata$`Crm Cd Desc` %in% c(
+  "CHILD ABANDONMENT", 
+  "CHILD ABUSE (PHYSICAL) - SIMPLE ASSAULT", 
+  "CHILD ABUSE (PHYSICAL) - AGGRAVATED ASSAULT", 
+  "CHILD ANNOYING (17YRS & UNDER)", 
+  "CHILD NEGLECT (SEE 300 W.I.C.)", 
+  "CHILD PORNOGRAPHY", 
+  "CHILD STEALING", 
+  "LEWD/LASCIVIOUS ACTS WITH CHILD"
+)] <- 0
 
-
+LAdata$`Vict Age`[LAdata$`Vict Age` == 0 & !LAdata$`Crm Cd Desc` %in% c(
+  "CHILD ABANDONMENT", 
+  "CHILD ABUSE (PHYSICAL) - SIMPLE ASSAULT", 
+  "CHILD ABUSE (PHYSICAL) - AGGRAVATED ASSAULT", 
+  "CHILD ANNOYING (17YRS & UNDER)", 
+  "CHILD NEGLECT (SEE 300 W.I.C.)", 
+  "CHILD PORNOGRAPHY", 
+  "CHILD STEALING", 
+  "LEWD/LASCIVIOUS ACTS WITH CHILD"
+)] <- NA
 
 table(LAdata$`Vict Age`)
 sum(is.na(LAdata$`Vict Age`))

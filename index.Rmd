@@ -5,4 +5,155 @@ output:
     html_document:
         toc: TRUE
         toc_float: TRUE
+bibliography: references.bib
+csl: https://raw.githubusercontent.com/citation-style-language/styles/master/apa.csl 
 ---
+
+## Introduction
+
+Crime has been a major issue in the city of Los Angeles due to a variety of factors, including high population density, gang activity, and elevated levels of poverty and homelessness [@berger2018a]. Boasting one of the highest crime rates in the nation (36 per 1,000 residents), Los Angeles is considered safer than only 7% of U.S. cities [@neighborhoodscout]. In order to keep track of the crime incidents, police officers are required to fill out a police report which is later transcribed to their digital record system. According to the Los Angeles Police Department Automated Report System (LAPD ARS), approximately 2.1 million crime incidents took place in Los Angeles from 2010 to 2019 [@lacitydata]. However, it should be noted that this figure is likely an underestimate as many crimes go unreported [@Wu2019].
+
+Currently, most analyses of police report data focus on determining the total counts of each type of crime to examine crime rate trends over time. However, advanced analysis is necessary to identify which demographic groups are most affected by crime. This would allow for the development of targeted programs that not only assist those in need, but also help prevent future occurrences. Thus, this paper aims to analyze the available data from LAPD ARS to identify 1) which demographic experienced the most crime from 2010 to 2019, 2) the types of crime they most reported, and 3) the locations in Los Angeles where they occurred most frequently.
+
+For information on the methods used in this analysis and the citations, please read the full report here: [An Analysis of Crime in Los Angeles from 2010 to 2019](Written-Report.pdf)
+
+The results are displayed below:
+
+## Results {.tabset}
+
+```{r include = FALSE}
+
+source("C:/Users/ellya/OneDrive/Desktop/Final Project/Final Project/CrimeData.R")
+
+democrime <- LAdatanomissing |>
+  ggplot() +
+  geom_bar(mapping = aes(x = `Vict Descent`, fill = `Vict Sex`), position = "dodge") +
+  labs(title = "Number of Crimes Categorized by Race and Gender") +
+  labs(x = "Race", y = "Number of Crimes Experienced", fill = "Gender") +
+  scale_fill_manual(values = c("F" = "pink", "M" = "lightblue", "X" = "gray"),
+                    labels = c("F" = "Female", "M" = "Male", "X" = "Unknown")) +
+  scale_x_discrete(labels = c(
+    "A" = "Asian",
+    "B" = "Black",
+    "H" = "Hispanic",
+    "P" = "Pacific Islander",
+    "W" = "White",
+    "X" = "Unknown")) +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+CrimesReportedByArea <- HispanicFemalearea |>
+  ggplot(aes(x = reorder(`AREA NAME`, -Entries), y = Entries, fill = `AREA NAME`)) + 
+  geom_bar(stat = "identity") +
+  labs(title = wrapped_titlearea, fill = "Precinct Area") +
+  labs(x = "Precinct Area", y = "Number of Crimes Reported") +
+  scale_fill_viridis(discrete = TRUE, option = "D") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) 
+
+HFcrimebarplot <- ggplot(data = HispanicFemalecrimesAge, aes(x = `Crm Cd Desc`, y = Entries, fill = `Crm Cd Desc`)) +
+  geom_bar(stat = "identity") +
+  scale_fill_brewer(palette = "Blues", labels = custom_label) +
+  labs(title = wrapped_title3) +
+  labs(x = "Type of Crime", y = "Number of Crimes Reported") +
+  scale_x_discrete(labels = wrapped_labels) +
+  theme(legend.position = "none")
+
+LAchoromap <- tm_shape(LAandCensusdata) + 
+  tm_polygons(col = "percent",
+          style = "fixed",
+          breaks = custom_breaks,
+          palette = "Purples",
+          border.alpha = 0.5, 
+              lwd = 1,
+              popup.vars = c("Percentage", "APREC"),
+          title = "Percentage Hispanic (2020)") +
+  tm_shape(lapd_divisions) + 
+  tm_borders(lwd = 2, col = "black", alpha = 1) +
+  tm_shape(HispanicFemalemap) +
+  tm_bubbles(col = "Reports",
+             palette = "Reds",
+             size = 0.01,
+             border.alpha = 0.01) +
+  tm_view(set.view = c(-118.25, 34.05, 9))
+tmap_mode("view")
+
+```
+
+### Tab 1
+
+```{r echo=FALSE}
+democrime
+```
+
+**Barplot of the number of crimes reported stratified by race and gender.**
+
+When stratifying crime incidents by race and gender, we can see that for most ethnic descents, women and men reported similar numbers of crime incidents for the 2010 to 2019 time period. The largest difference in reported crimes was between Black women and men, in which Black women reported approximately 50,000 more crime incidents. Overall, however, Hispanics experienced the highest number of crime incidents, with Hispanic women experiencing slightly more than Hispanic men and the most of all demographics. After the Hispanic population, Whites experienced the most crime, followed by Black, Pacific Islander, and then Asian. Further analysis was conducted solely on Hispanic females.
+
+### Tab 2
+
+```{r echo=FALSE}
+grid.arrange(plotLAage, plotHFage, ncol = 2)
+```
+
+**Barplots of the number of crimes reported by age range from 2010 to 2019 for Los Angeles (left) and Hispanic females (right).**
+
+Looking at the age distribution of Hispanic female victims who reported crimes, we can see that it was the 20-29 age category that reported the most crimes. They were then followed by 30-39 year olds and 40-49 year olds. While the age distribution did not differ very much from that of Los Angeles as a whole, there is a sharper decrease in crime for Hispanic females as they age compared to the city data.
+
+### Tab 3
+
+| Ranking of Reported Crimes | Top Crimes for Los Angeles |              Top Crimes for Males              |      Top Crimes for Females       |  Top Crimes for Hispanic Females  | Top Crimes for Hispanic Females Aged 20-29 |
+|:----------:|:----------:|:----------:|:----------:|:----------:|:----------:|
+|             1              |  Battery - Simple Assault  |            Battery - Simple Assault            |     Battery - Simple Assault      | Intimate Partner - Simple Assault |     Intimate Partner - Simple Assault      |
+|             2              |   Burglary from Vehicle    |             Burglary from Vehicle              | Intimate Partner - Simple Assault |     Battery - Simple Assault      |          Battery - Simple Assault          |
+|             3              |   Petty Theft (\< \$950)   |                    Burglary                    |       Burglary from Vehicle       |       Burglary from Vehicle       |           Burglary from Vehicle            |
+|             4              |       Identity Theft       | Assault with Deadly Weapon, Aggravated Assault |      Petty Theft (\< \$950)       |      Petty Theft (\< \$950)       |           Petty Theft (\< \$950)           |
+|             5              |          Burglary          |             Petty Theft (\< \$950)             |          Identity Theft           |          Identity Theft           |       Vandalism - Felony (\> \$400)        |
+
+**Rankings of the most reported crimes for Los Angeles, each gender for the city, Hispanic women, and Hispanic women aged 20-29.**
+
+When comparing the top 5 reported crimes for each demographic group, we can see that battery, burglary from a vehicle, and petty theft are common for all of the listed demographic groups. Men were more likely to report violent crimes, such as assault with a deadly weapon/aggravated assault. Women, on the other hand, were more likely to report simple assault or being assaulted by their intimate partner. When comparing the general female category to the Hispanic female categories, we can see that the first and second most reported crimes are switched, with Hispanic women being more likely to report being assaulted by their intimate partner than a simple assault. Females in Los Angeles reported the same top 5 crimes as Hispanic females. Hispanic females aged 20-29, however, experienced more vandalism as opposed to identity theft.
+
+### Tab 4
+
+```{r echo=FALSE}
+HFcrimebarplot
+```
+
+**Barplot of the top 5 crimes reported by Hispanic females aged 20 to 29 from 2010 to 2019 in Los Angeles.**
+
+When looking at the distribution of the top 5 crimes reported by Hispanic females aged 20-29, we see that there is a large difference between the first reported crime (intimate partner - simple assault) and the subsequent reported crimes. It is almost double the number of reported battery cases and more than double the reported burglary from vehicle, petty theft, and vandalism.
+
+### Tab 5
+
+```{r echo=FALSE}
+CrimesReportedByArea
+```
+
+**Number of reported crimes for each of the 21 precinct areas that make up the City of Los Angeles.**
+
+Of the 21 precinct areas that make up Los Angeles, Mission reported the most crimes with a total of 9071 crime incidents. It was then followed by Newton and 77th street. West LA reported the least amount of crime. However, no precinct areas reported less than 2000 crime incidents.
+
+### Tab 6
+
+```{r echo=FALSE}
+LAchoromap
+```
+
+**Choropleth map showing the percentages of Hispanic females living in each Census block in Los Angeles county. Data was taken from the 2020 Census. Black lines demarcate each of the 21 precinct areas that make up Los Angeles County. Red bubbles indicate the top 100 coordinates based on number of crimes reported by Hispanic females aged 20 to 29.**
+
+When analyzing the choropleth map, it is evident that Hispanic women are heavily clustered east of the city of Los Angeles. However, within the city boundaries, they have pockets of high population density in the precinct areas of Mission, Newton, 77th Street, Southeast, Hollenbeck, Southwest, Rampart, Olympic, Foothill, and Harbor. The coordinate with the highest incidents of crime was located in the the western Central Precinct area with 315 reports, followed by 210 reports in central Devonshire. Interestingly, neighborhoods reporting high levels of crime (greater than 100 reports) typically had low percentages of Hispanic women. However, according to the map, crime was heavily clustered in the Mission, Rampart, and Central precinct areas.
+
+## Conclusion and Summary
+
+According to the data analysis, the demographic that had been the victim of the most crimes in Los Angeles from 2010 to 2019 were Hispanics. More specifically, it was Hispanic females aged 20 to 29. However, crime distibution by age for Hispanic females was similar to that of the city, meaning that it was not unexpected for this age group to report the most crime. However, Hispanic women showed a sharper downward trend in reported crimes as they got older, suggesting the presence of external factors, such as decreased likelihood to report or divorce/separation from their abusive partners ("Intimate Partner - Simple Assault" was the most reported crime for Hispanic females).
+
+Hispanic females and the general female population of Los Angeles (or Los Angelenos women) reported the same top five crimes, with the only difference being the swapping of the top two most reported crimes. The most reported crime among Los Angelenos women was "Battery - Simple Assault," whereas Hispanic women most frequently reported "Intimate Partner - Simple Assault". Similar to the general Hispanic female population, the targeted demographic most reported "Intimate Partner - Simple Assault." The large number of reports of spousal abuse may be due to the Latin culture's tradition of "El Machismo" in which Latino men want to be seen as extremely masculine, leading to aggressive and/or abusive behavior towards their intimate partners to foster an environment of obedience [@Ycastmediagroup2024]. However, the number of reports towards intimate partner abuse is is almost double that of the other reported crimes, showing how prominent of an issue it was for young Hispanic women. More current data is needed to determine if this is still the most reported crime they face in Los Angeles and research should be aimed at dismantling the tradition of "El Machismo" and promoting the safety of Hispanic women within their relationships.
+
+When analyzing the number of crimes in each of the 21 precinct areas that make up Los Angeles, the precinct area with the most crime was Mission, followed by Newton, and then 77th street. The precinct area with the least amount of crime was West LA. The trend in crime may be due to differences in socioeconomic statuses of the different areas. Using the choropleth map, it was determined that Hispanic females had high density areas in the precinct areas of Mission, Newton, 77th Street, Southeast, Hollenbeck, Southwest, Rampart, Olympic, Foothill, and Harbor. These are also the top ten precinct areas with the highest reported crimes for the targeted demographic. Thus, it is not unexpected to observe higher levels of crime in these areas, given the higher percentages of Hispanic females living there.
+
+Upon evaluating the top 100 coordinates with the most reported crimes, high numbers of crime reports were clustered in the Mission, Rampart, and Central precinct areas. This may due to locational factors, such as being areas that Hispanic women are likely to frequent. However, further analysis into these locations is necessary to test this hypothesis. Furthermore, a surprising discovery was that the locations with more than 100 reported crimes were located in areas with relatively low reported Hispanic female populations (less than 20%). Once again, this could be attributed to locational factors, such as proximity to a mall or other facilities that Hispanic women may frequent. Another factor could be that gangs or criminals are specifically targeting these locations to exploit victims. Additionally, areas with high Hispanic female populations may have a higher crime distribution, meaning that they are more spread out across the map. Thus, areas with large Hispanic female populations may report more crimes, but it is not demonstrated by looking at only the top 100 coordinates due to their small values.
+
+## Limitations of the Study
+
+There are many limitations to this study. Firstly, there were many missing observations. If there was a bias in the missing information by any of the analyzed variables, the data may be inaccurate. Furthermore, the data on children of 0 years of age may be inaccurate due to the use of 0 as a placeholder for unknown age. While we tried to determine which crime codes could be applied to newborns, there may been errors or overlooked crime codes in the process, leading to inaccurate data. Additionally, the 2020 decennial Census data introduces errors in the data for privacy and confidentiality purposes, which could have impacted the results. Lastly, there may have been many crimes that were misclassified. The LAPD has had many issues with classifying serious offenses as minor offenses [@abc7_lapd_report_2014; @poston_rubin_lapd_audit_2015]. Thus, the crime codes may not accurately reflect the crimes reported, leading to errors in the crime analysis.
+
+More accurate analyses could have been conducted with access to more specific data from the city of Los Angeles. While the 2020 Census reported the total population, as well as the percentages of each race and gender, it lacked detailed information on the intersections of these categories, such as the breakdown of Hispanic men and women. With this information, crime rates per N individuals could be calculated for each demographic, giving a better representation of the crime rates. Furthermore, Los Angeles city data is divided into 15 city council districts, which have different boundaries than the 21 precinct areas. With detailed population for each of these 21 precinct areas, more informative measures of crime rates could be calculated.
